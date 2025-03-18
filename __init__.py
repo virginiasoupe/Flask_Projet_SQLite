@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string, render_template, jsonify, request, redirect, url_for, session
+from flask import Flask, render_template_string, render_template, jsonify, request, redirect, url_for, session 
 from flask import render_template
 from flask import json
 from urllib.request import urlopen
@@ -39,43 +39,42 @@ def authentification():
 
     return render_template('formulaire_authentification.html', error=False)
 
-@app.route('/fiche_client/<int:post_id>')
-def Readfiche(post_id):
-    conn = sqlite3.connect('database.db')
+@app.route('/fiche_livre/<int:livre_id>')
+def Readfiche(livre_id):
+    conn = sqlite3.connect('bibliotheque.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM clients WHERE id = ?', (post_id,))
+    cursor.execute('SELECT * FROM livres WHERE id = ?', (livre_id,))
     data = cursor.fetchall()
     conn.close()
     # Rendre le template HTML et transmettre les données
     return render_template('read_data.html', data=data)
 
-@app.route('/consultation/')
-def ReadBDD():
-    conn = sqlite3.connect('database.db')
+@app.route('/consultation/')</ndef ReadBDD():
+    conn = sqlite3.connect('bibliotheque.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM clients;')
+    cursor.execute('SELECT * FROM livres;')
     data = cursor.fetchall()
     conn.close()
     return render_template('read_data.html', data=data)
 
-@app.route('/enregistrer_client', methods=['GET'])
-def formulaire_client():
+@app.route('/enregistrer_livre', methods=['GET'])
+def formulaire_livre():
     return render_template('formulaire.html')  # afficher le formulaire
 
-@app.route('/enregistrer_client', methods=['POST'])
-def enregistrer_client():
-    nom = request.form['nom']
-    prenom = request.form['prenom']
+@app.route('/enregistrer_livre', methods=['POST'])
+def enregistrer_livre():
+    titre = request.form['titre']
+    auteur = request.form['auteur']
 
     # Connexion à la base de données
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('bibliotheque.db')
     cursor = conn.cursor()
 
-    # Exécution de la requête SQL pour insérer un nouveau client
-    cursor.execute('INSERT INTO clients (created, nom, prenom, adresse) VALUES (?, ?, ?, ?)', (1002938, nom, prenom, "ICI"))
+    # Exécution de la requête SQL pour insérer un nouveau livre
+    cursor.execute('INSERT INTO livres (created, titre, auteur, disponible) VALUES (?, ?, ?, ?)', (1002938, titre, auteur, 1))
     conn.commit()
     conn.close()
     return redirect('/consultation/')  # Rediriger vers la page d'accueil après l'enregistrement
-                                                                                                                                       
+                                                                                                                                      
 if __name__ == "__main__":
   app.run(debug=True)
